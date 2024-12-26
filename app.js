@@ -14,6 +14,8 @@ app.use('/manga', mangaRoutes);
 app.use('/chapter', chapterRoutes);
 app.use('/page', pageRoutes);
 
+
+
 app.listen(port, () => {
-    console.log(`Serveur démarré sur http://Picsou06.fr:${port}`);
+    console.log(`Serveur démarré sur http://${process.env.WEBSITE}:${port}`);
 });

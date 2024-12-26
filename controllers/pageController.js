@@ -5,7 +5,7 @@ import pool from '../config/db.js';
 export async function API_getPages(mangaId, chapterId) {
     try {
         const conn = await pool.getConnection();
-        const query = `SELECT location FROM ${process.env.DB_TABLE} WHERE place = ?`;
+        const query = `SELECT location FROM ${process.env.DB_TABLE} WHERE id = ?`;
         const rows = await conn.query(query, [mangaId]);
 
         const location = rows[0].location;

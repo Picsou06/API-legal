@@ -19,7 +19,7 @@ export const getMangas = async (req, res) => {
         }
 
         const results = rows.map(row => ({
-            id: row.place,
+            id: row.id,
             title: row.title,
             picture: row.picture.replace(/\\/g, '\\\\'),
             website: "local",

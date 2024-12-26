@@ -17,7 +17,7 @@ export const getChapters = async (req, res) => {
 
     try {
         const conn = await pool.getConnection();
-        const query = `SELECT location FROM ${process.env.DB_TABLE} WHERE place = ? AND language = ?`;
+        const query = `SELECT location FROM ${process.env.DB_TABLE} WHERE id = ? AND language = ?`;
         const [rows] = await conn.query(query, [mangaId, language]);
 
 
