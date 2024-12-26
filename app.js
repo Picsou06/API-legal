@@ -3,7 +3,7 @@ import mangaRoutes from './routes/manga.js';
 import chapterRoutes from './routes/chapter.js';
 import pageRoutes from './routes/page.js';
 import dotenv from 'dotenv';
-import pool from '../config/db.js';
+import pool from './config/db.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -36,14 +36,13 @@ async function initializeDatabase() {
 async function scanAndFillDatabase() {
     const mangaDir = './mangas';
     const mangaFolders = fs.readdirSync(mangaDir);
+    let mangaCount = 0;
 
     for (const folder of mangaFolders) {
         const folderPath = path.join(mangaDir, folder);
         if (fs.lstatSync(folderPath).isDirectory()) {
             const [title, language] = folder.split(/-(?=[^-]+$)/);
-            if (language !== 'en' && language !== 'fr') {
-                language = 'en';
-            }
+            const lang = (language !== 'en' && language !== 'fr') ? 'en' : language;
             const files = fs.readdirSync(folderPath);
 
             for (const file of files) {
@@ -52,7 +51,8 @@ async function scanAndFillDatabase() {
                     let conn;
                     try {
                         conn = await pool.getConnection();
-                        await conn.query(`INSERT INTO ${process.env.DB_TABLE} (title, placement, language) VALUES (?, ?, ?)`, [title.trim(), filePath, language.trim()]);
+                        await conn.query(`INSERT INTO ${process.env.DB_TABLE} (title, placement, language) VALUES (?, ?, ?)`, [title.trim(), filePath, lang.trim()]);
+                        mangaCount++;
                     } catch (err) {
                         console.error(err);
                     } finally {
@@ -62,12 +62,13 @@ async function scanAndFillDatabase() {
             }
         }
     }
+    return mangaCount;
 }
 
-initializeDatabase().then(() => {
-    scanAndFillDatabase();
-});
-
-app.listen(port, () => {
-    console.log(`Serveur démarré sur http://${process.env.WEBSITE}:${port}`);
+initializeDatabase().then(async () => {
+    const mangaCount = await scanAndFillDatabase();
+    console.log(`${mangaCount} mangas added to the database.`);
+    app.listen(port, () => {
+        console.log(`Serveur démarré sur http://${process.env.WEBSITE}:${port}`);
+    });
 });
