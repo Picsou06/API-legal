@@ -56,8 +56,7 @@ export const isUpdated = async (req, res) => {
             return res.status(500).json({ error: 'No data returned from the database' });
         }
 
-        // Comparaison correcte avec l'accès à totalCount
-        const totalCount = BigInt(rows.totalCount); // Assurez-vous que totalCount est bien un BigInt
+        const totalCount = BigInt(rows.totalCount);
         const isUpdated = totalCount === count;
 
         res.json({ updated: isUpdated });
