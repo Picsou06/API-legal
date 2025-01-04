@@ -21,11 +21,9 @@ router.get('/:id/picture', async (req, res) => {
     try {
         const [rows] = await conn.query(`SELECT placement FROM ${process.env.DB_TABLE} WHERE id = ?`, [req.params.id]);
         let placement = rows.placement;
-        console.log(placement);
 
         if (placement) {
             placement = path.join(__dirname, '..', placement, 'cover.jpg');
-            console.log(placement);
             res.sendFile(placement);
         } else {
             res.status(404).send('Manga not found');

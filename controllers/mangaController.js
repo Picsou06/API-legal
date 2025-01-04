@@ -23,11 +23,10 @@ export const getMangas = async (req, res) => {
         const results = rows.map(row => ({
             id: row.id,
             title: row.title,
-            picture: 'http://' + process.env.WEBSITE + ':' + process.env.PORT + '/manga/' + row.place + '/picture',
+            picture: 'http://' + process.env.WEBSITE + ':' + process.env.PORT + '/manga/' + row.id + '/picture',
             website: "local",
             language: row.language
         }));
-        console.log(results);
         res.json(results);
     } catch (err) {
         console.error('Erreur de base de données:', err);
