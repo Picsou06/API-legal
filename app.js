@@ -9,7 +9,7 @@ import path from 'path';
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/manga', mangaRoutes);
@@ -18,6 +18,7 @@ app.use('/page', pageRoutes);
 
 async function initializeDatabase() {
     let conn;
+    console.log('Initialisation de la base de données...');
     try {
         conn = await pool.getConnection();
         await conn.query(`CREATE TABLE IF NOT EXISTS ${process.env.DB_TABLE} (
@@ -26,6 +27,7 @@ async function initializeDatabase() {
             placement VARCHAR(255),
             language VARCHAR(10)
         )`);
+        console.log('Table créée.');
     } catch (err) {
         console.error(err);
     } finally {
@@ -37,17 +39,17 @@ async function scanAndFillDatabase() {
     const mangaDir = './mangas';
     const mangaFolders = fs.readdirSync(mangaDir);
     let mangaCount = 0;
-
-    for (const folder of mangaFolders) {
+    console.log('Scan des dossiers de mangas...');
+    const promises = mangaFolders.map(async (folder) => {
         const folderPath = path.join(mangaDir, folder);
         if (fs.lstatSync(folderPath).isDirectory()) {
             const [title, language] = folder.split(/-(?=[^-]+$)/);
             const lang = (language !== 'en' && language !== 'fr') ? 'en' : language;
             const files = fs.readdirSync(folderPath);
 
-            for (const file of files) {
+            const filePromises = files.map(async (file) => {
                 const filePath = path.join(folderPath, file);
-                if (fs.lstatSync(filePath).isFile()) {
+                if (fs.lstatSync(filePath).isDirectory()) {
                     let conn;
                     try {
                         conn = await pool.getConnection();
@@ -59,9 +61,11 @@ async function scanAndFillDatabase() {
                         if (conn) conn.end();
                     }
                 }
-            }
+            });
+            await Promise.all(filePromises);
         }
-    }
+    });
+    await Promise.all(promises);
     return mangaCount;
 }
 
