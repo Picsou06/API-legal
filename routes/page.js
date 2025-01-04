@@ -15,10 +15,10 @@ router.get('/:chapterId', async (req, res) => {
     }
 });
 
-router.get('/images/:location/:chapterId/:filename', (req, res) => {
-    const { location, chapterId, filename } = req.params;
+router.get('/images/:placement/:chapterId/:filename', (req, res) => {
+    const { placement, chapterId, filename } = req.params;
     const __dirname = decodeURIComponent(path.dirname(new URL(import.meta.url).pathname));
-    const imagePath = path.join(__dirname, `../mangas/${location}/${chapterId}/${filename}`);
+    const imagePath = path.join(__dirname, `../mangas/${placement}/${chapterId}/${filename}`);
     res.sendFile(imagePath);
 });
 

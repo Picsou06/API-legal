@@ -24,9 +24,11 @@ async function initializeDatabase() {
         await conn.query(`CREATE TABLE IF NOT EXISTS ${process.env.DB_TABLE} (
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255),
+            picture VARCHAR(255),
             placement VARCHAR(255),
             language VARCHAR(10)
         )`);
+        await conn.query(`TRUNCATE TABLE ${process.env.DB_TABLE}`);
         console.log('Table créée.');
     } catch (err) {
         console.error(err);
@@ -38,34 +40,26 @@ async function initializeDatabase() {
 async function scanAndFillDatabase() {
     const mangaDir = './mangas';
     const mangaFolders = fs.readdirSync(mangaDir);
-    let mangaCount = 0;
-    console.log('Scan des dossiers de mangas...');
-    const promises = mangaFolders.map(async (folder) => {
+    const mangaCount = mangaFolders.length;
+
+    for (const folder of mangaFolders) {
         const folderPath = path.join(mangaDir, folder);
         if (fs.lstatSync(folderPath).isDirectory()) {
-            const [title, language] = folder.split(/-(?=[^-]+$)/);
-            const lang = (language !== 'en' && language !== 'fr') ? 'en' : language;
-            const files = fs.readdirSync(folderPath);
-
-            const filePromises = files.map(async (file) => {
-                const filePath = path.join(folderPath, file);
-                if (fs.lstatSync(filePath).isDirectory()) {
-                    let conn;
-                    try {
-                        conn = await pool.getConnection();
-                        await conn.query(`INSERT INTO ${process.env.DB_TABLE} (title, placement, language) VALUES (?, ?, ?)`, [title.trim(), filePath, lang.trim()]);
-                        mangaCount++;
-                    } catch (err) {
-                        console.error(err);
-                    } finally {
-                        if (conn) conn.end();
-                    }
-                }
-            });
-            await Promise.all(filePromises);
+            let [title, language] = folder.split(/-(?=[^-]+$)/);
+            if (language !== 'en' && language !== 'fr') {
+                language = 'en';
+            }
+            let conn;
+            try {
+                conn = await pool.getConnection();
+                await conn.query(`INSERT INTO ${process.env.DB_TABLE} (title, placement, language) VALUES (?, ?, ?)`, [title.trim(), folderPath, language.trim()]);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                if (conn) conn.end();
+            }
         }
-    });
-    await Promise.all(promises);
+    }
     return mangaCount;
 }
 

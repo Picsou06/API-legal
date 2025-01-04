@@ -1,4 +1,6 @@
 import pool from '../config/db.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Récupérer la liste des mangas
 export const getMangas = async (req, res) => {
@@ -21,10 +23,11 @@ export const getMangas = async (req, res) => {
         const results = rows.map(row => ({
             id: row.id,
             title: row.title,
-            picture: row.picture.replace(/\\/g, '\\\\'),
+            picture: 'http://' + process.env.WEBSITE + ':' + process.env.PORT + '/manga/' + row.place + '/picture',
             website: "local",
             language: row.language
         }));
+        console.log(results);
         res.json(results);
     } catch (err) {
         console.error('Erreur de base de données:', err);
@@ -43,7 +46,7 @@ export const isUpdated = async (req, res) => {
         let count;
 
         if (/^\d+$/.test(countParam)) {
-            count = BigInt(countParam); // Convertir count en BigInt si c'est un nombre entier valide
+            count = BigInt(countParam);
         } else {
             return res.status(400).json({ error: 'Invalid count parameter' });
         }

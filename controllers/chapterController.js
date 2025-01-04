@@ -17,7 +17,7 @@ export const getChapters = async (req, res) => {
 
     try {
         const conn = await pool.getConnection();
-        const query = `SELECT location FROM ${process.env.DB_TABLE} WHERE id = ? AND language = ?`;
+        const query = `SELECT placement FROM ${process.env.DB_TABLE} WHERE id = ? AND language = ?`;
         const [rows] = await conn.query(query, [mangaId, language]);
 
 
@@ -25,8 +25,8 @@ export const getChapters = async (req, res) => {
             return res.status(404).json({ error: 'Manga not found' });
         }
 
-        const location = rows.location;
-        const mangaDir = path.join(__dirname, `../mangas/${location}`);
+        const placement = rows.placement;
+        const mangaDir = path.join(__dirname, `../mangas/${placement}`);
 
         const directories = fs.readdirSync(mangaDir, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
