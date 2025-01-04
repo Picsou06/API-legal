@@ -23,7 +23,7 @@ router.get('/:id/picture', async (req, res) => {
         let placement = rows.placement;
 
         if (placement) {
-            placement = path.join(__dirname, '..', placement, 'cover.jpg');
+            placement = path.join(__dirname, '../mangas', placement, 'cover.jpg');
             res.sendFile(placement);
         } else {
             res.status(404).send('Manga not found');

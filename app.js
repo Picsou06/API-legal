@@ -52,7 +52,8 @@ async function scanAndFillDatabase() {
             let conn;
             try {
                 conn = await pool.getConnection();
-                await conn.query(`INSERT INTO ${process.env.DB_TABLE} (title, placement, language) VALUES (?, ?, ?)`, [title.trim(), folderPath, language.trim()]);
+                
+                await conn.query(`INSERT INTO ${process.env.DB_TABLE} (title, placement, language) VALUES (?, ?, ?)`, [title.trim(), folderPath.replace(/^.*?\//, '/'), language.trim()]);
             } catch (err) {
                 console.error(err);
             } finally {

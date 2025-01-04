@@ -26,7 +26,7 @@ export const getChapters = async (req, res) => {
         }
 
         const placement = rows.placement;
-        const mangaDir = path.join(__dirname, `../mangas/${placement}`);
+        const mangaDir = path.join(__dirname, `../mangas${placement}`);
 
         const directories = fs.readdirSync(mangaDir, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())

@@ -15,11 +15,26 @@ router.get('/:chapterId', async (req, res) => {
     }
 });
 
-router.get('/images/:placement/:chapterId/:filename', (req, res) => {
-    const { placement, chapterId, filename } = req.params;
-    const __dirname = decodeURIComponent(path.dirname(new URL(import.meta.url).pathname));
-    const imagePath = path.join(__dirname, `../mangas/${placement}/${chapterId}/${filename}`);
-    res.sendFile(imagePath);
+router.get('/images/:id/:filename', async (req, res) => {
+    const conn = await pool.getConnection();
+    const { id, filename } = req.params;
+
+    try {
+        const [rows] = await conn.query(`SELECT placement FROM ${process.env.DB_TABLE} WHERE id = ?`, [id]);
+        let placement = rows[0]?.placement;
+
+        if (placement) {
+            const __dirname = decodeURIComponent(path.dirname(new URL(import.meta.url).pathname));
+            const imagePath = path.join(__dirname, `../mangas/${placement}/${filename}`);
+            res.sendFile(imagePath);
+        } else {
+            res.status(404).send('Manga not found');
+        }
+    } catch (error) {
+        res.status(500).send('Failed to fetch manga' + error);
+    } finally {
+        conn.release();
+    }
 });
 
 export default router;
