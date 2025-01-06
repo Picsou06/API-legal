@@ -17,7 +17,6 @@ export async function API_getPages(mangaId, chapterId) {
 
         const pages = files.map(file => `http://${process.env.WEBSITE}:${process.env.PORT}/page/images/${mangaId}/${chapterId}/${file}`);
 
-        console.log(pages);
         return pages;
     } catch (error) {
         console.error("Error fetching pages:", error);

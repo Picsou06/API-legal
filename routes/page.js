@@ -22,7 +22,6 @@ router.get('/images/:id/:chapterid/:filename', async (req, res) => {
 
     try {
         const [rows] = await conn.query(`SELECT placement FROM ${process.env.DB_TABLE} WHERE id = ?`, [id]);
-        console.log(rows.placement);
         let placement = rows.placement;
 
         if (placement) {
