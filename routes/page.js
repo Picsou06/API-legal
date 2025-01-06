@@ -1,6 +1,7 @@
 import express from 'express';
 import { API_getPages } from '../controllers/pageController.js';
 import path from 'path';
+import pool from '../config/db.js';
 
 const router = express.Router();
 
@@ -15,17 +16,18 @@ router.get('/:chapterId', async (req, res) => {
     }
 });
 
-router.get('/images/:id/:filename', async (req, res) => {
+router.get('/images/:id/:chapterid/:filename', async (req, res) => {
     const conn = await pool.getConnection();
-    const { id, filename } = req.params;
+    const { id, chapterid, filename } = req.params;
 
     try {
         const [rows] = await conn.query(`SELECT placement FROM ${process.env.DB_TABLE} WHERE id = ?`, [id]);
-        let placement = rows[0]?.placement;
+        console.log(rows.placement);
+        let placement = rows.placement;
 
         if (placement) {
             const __dirname = decodeURIComponent(path.dirname(new URL(import.meta.url).pathname));
-            const imagePath = path.join(__dirname, `../mangas/${placement}/${filename}`);
+            const imagePath = path.join(__dirname, `../mangas/${placement}/${chapterid}/${filename}`);
             res.sendFile(imagePath);
         } else {
             res.status(404).send('Manga not found');
