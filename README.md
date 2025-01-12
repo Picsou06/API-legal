@@ -19,10 +19,14 @@ MangaFinderAPI is a simple API to manage and serve manga files.
 
 1. Configure the `.env` file with your database access information. Rename the `.env.exemple` file in the root directory to `.env` and update the following content:
     ```plaintext
-    DB_HOST=your_database_host
-    DB_USER=your_database_user
-    DB_PASS=your_database_password
-    DB_NAME=your_database_name
+    DB_HOST=localhost
+    DB_PORT=3306
+    DB_USER=yourusername
+    DB_PASSWORD=yourpassword
+    DB_NAME=yourdatabasename
+    DB_TABLE=yourtablename
+    WEBSITE=yourwebsite
+    PORT=3000
     ```
 
 ## Manga Directory Structure
