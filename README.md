@@ -53,7 +53,7 @@ mangas/
 │   │   ├── page1.jpg
 │   │   ├── page2.jpg
 ```
-## Installation
+
 ## Running the API
 
 1. Start the API using the following command:
